@@ -1,14 +1,10 @@
-import React, { Component } from 'react';
-import logo from './logo.svg';
+import React from 'react';
 import { 
           compose,
           mapPropsStream,
-          withState,
-          withHandlers,
           setObservableConfig,
       } from 'recompose'; 
 import './App.css';
-import Rx from 'rxjs';
 import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
 import rxjsconfig from 'recompose/rxjsObservableConfig'
@@ -21,11 +17,16 @@ let searchGithub = (term) =>
 
 let App = ({ onSearch, results, query }) =>
   <div>
-    <input type="text" value={ query } onChange={ (event) => onSearch(event.target.value) } />
-    <ul>{
+    <input type="text" 
+      value={ query } 
+      onChange={ (event) => onSearch(event.target.value) } 
+    />
+    <ul>
+    {
       results.items.map((result, key) =>
         <li key={ key }>{result.login}</li>)
-    }</ul>
+    }
+    </ul>
   </div>
       
 
@@ -38,10 +39,11 @@ let enhance = compose(
       .startWith('');
 
     let results$ = query$
-      .debounceTime(200)
+      .debounceTime(250)
       .distinctUntilChanged()
       .switchMap(query => query ? 
-          searchGithub(query) : Promise.resolve({items: []})
+          searchGithub(query) : 
+          Promise.resolve({items: []})
         );
 
 
