@@ -1,9 +1,9 @@
 import React from 'react';
 import { 
-          compose,
-          mapPropsStream,
-          setObservableConfig,
-      } from 'recompose'; 
+  compose,
+  mapPropsStream,
+  setObservableConfig,
+} from 'recompose'; 
 import './App.css';
 import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
@@ -17,7 +17,8 @@ let searchGithub = (term) =>
 
 let App = ({ onSearch, results, query }) =>
   <div>
-    <input type="text" 
+    <input type="text"
+      placeholder="Search Github Users"
       value={ query } 
       onChange={ (event) => onSearch(event.target.value) } 
     />
@@ -39,11 +40,12 @@ let enhance = compose(
       .startWith('');
 
     let results$ = query$
-      .debounceTime(250)
+      .debounceTime(350)
       .distinctUntilChanged()
+      .filter(query => query.length >= 2 || query.length === 0)
       .switchMap(query => query ? 
-          searchGithub(query) : 
-          Promise.resolve({items: []})
+          Observable.from(searchGithub(query)) : 
+          Observable.from(Promise.resolve({items: []}))
         );
 
 
